@@ -1,6 +1,14 @@
 buildscript {
     ext {
         compose_version = '1.0.0-beta01'
+        coroutines_version = "1.4.2"
+        hilt_version = "2.33-beta"
+        hilt_compiler_version = "1.0.0-alpha03"
+        timber_version = "4.7.1"
+        retrofit_version = "2.9.0"
+        moshi_version = "1.11.0"
+        okhttp_version = "4.9.0"
+        activity_ktx_version = "1.1.0"
     }
     repositories {
         google()
@@ -9,6 +17,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.0-alpha10"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.30"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
     }
 }
 
