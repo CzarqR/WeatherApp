@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.lifecycle.lifecycleScope
+import com.myniprojects.weatherapp.ui.screens.MainScreen
 import com.myniprojects.weatherapp.ui.theme.WeatherAppTheme
 import com.myniprojects.weatherapp.vm.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,8 +32,11 @@ class MainActivity : ComponentActivity()
 
         setContent {
             WeatherAppTheme {
-                Surface(color = MaterialTheme.colors.background) {
 
+                Surface(
+                    color = MaterialTheme.colors.background
+                ) {
+                    MainScreen()
                 }
             }
         }
