@@ -69,6 +69,7 @@ dependencies {
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_compiler_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
 
+
     // coroutines https://github.com/Kotlin/kotlinx.coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
