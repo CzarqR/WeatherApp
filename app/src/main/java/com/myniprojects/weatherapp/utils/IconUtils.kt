@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import com.myniprojects.weatherapp.R
 
 @DrawableRes
-fun getDrawableFromCode(code: String): Int
+fun getDrawableFromCode(code: String?): Int
 {
     return when (code)
     {
