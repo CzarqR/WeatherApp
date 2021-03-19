@@ -3,7 +3,10 @@ package com.myniprojects.weatherapp.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -20,17 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myniprojects.weatherapp.R
-import com.myniprojects.weatherapp.ui.theme.WeatherAppTheme
 import com.myniprojects.weatherapp.ui.theme.getGradientBottom
 import com.myniprojects.weatherapp.ui.theme.getGradientTop
+import com.myniprojects.weatherapp.utils.getDrawableFromCode
 import com.myniprojects.weatherapp.vm.MainViewModel
-import com.skydoves.landscapist.glide.GlideImage
 import timber.log.Timber
 
 @Composable
@@ -57,6 +58,7 @@ fun MainScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
+
             item {
                 CityInput(
                     mainViewModel = viewModel
@@ -64,13 +66,12 @@ fun MainScreen(
             }
 
             item {
-                GlideImage(
-                    imageModel = "https://openweathermap.org/img/wn/10d@4x.png",
-                    modifier = Modifier.size(100.dp),
-                    circularRevealedEnabled = true,
-                    circularRevealedDuration = 1000,
+                WeatherIcon(
+                    modifier = Modifier
+                        .padding(top = dimensionResource(id = R.dimen.big_margin))
                 )
             }
+
 
         }
 
@@ -126,12 +127,24 @@ fun CityInput(
     )
 }
 
-@Preview(showBackground = true)
 @Composable
-fun MainScreenPreview()
+fun WeatherIcon(
+    modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel = viewModel()
+)
 {
-    WeatherAppTheme {
-
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            painter = painterResource(id = getDrawableFromCode("03n")),
+            contentDescription = stringResource(id = R.string.weather_icon),
+            modifier = Modifier
+                .fillMaxWidth(0.5f),
+        )
     }
 }
+
+
 
