@@ -4,4 +4,9 @@
     <string name="city_icon">City icon</string>
     <string name="accessibility_icon">Accessibility icon</string>
     <string name="weather_icon">Weather Icon</string>
+    <string name="unknown">Unknown</string>
+    <string name="temp_format">%s°C</string>
+    <string name="temp_format_long">%s°C / %s°C</string>
+    <string name="pressure_format">%d hPa</string>
+    <string name="humidity_format">%s%%</string>
 </resources>

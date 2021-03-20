@@ -2,4 +2,6 @@
 <resources>
     <dimen name="medium_margin">8dp</dimen>
     <dimen name="big_margin">16dp</dimen>
+    <dimen name="base_icon_size">64dp</dimen>
+    <dimen name="small_margin">4dp</dimen>
 </resources>

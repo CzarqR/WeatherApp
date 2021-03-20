@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,11 +41,27 @@ class MainViewModel @Inject constructor(
 
         searchJob = viewModelScope.launch(Dispatchers.IO) {
             repository.getCurrentWeather(cityName.value).collectLatest {
+
+                if (it is ResponseState.Success)
+                {
+                    val c = it.data.sys?.country
+                    if (c != null)
+                    {
+                        cityName.value = "${it.data.name}, $c"
+                        cityName.value = "${it.data.name}, $c"
+                    }
+                    else
+                    {
+                        cityName.value = it.data.name
+                    }
+                }
+
                 _weatherResponse.value = it
+
             }
         }
-
     }
+
 
     fun changeAccessibility()
     {

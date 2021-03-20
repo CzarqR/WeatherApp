@@ -21,7 +21,6 @@ inline val <reified T : Enum<T>> T.next: T
     get()
     {
         val values = enumValues<T>()
-        val nextOrdinal = (ordinal + 1) % values.size
-        return values[nextOrdinal]
+        return values[(ordinal + 1) % values.size]
     }
 
