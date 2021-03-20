@@ -93,7 +93,4 @@ dependencies {
 
     // activity ktx https://developer.android.com/jetpack/androidx/releases/activity
     implementation "androidx.activity:activity-ktx:$activity_ktx_version"
-
-    // Landscapist-Glide https://github.com/skydoves/Landscapist
-    implementation "com.github.skydoves:landscapist-glide:$glide_version"
 }

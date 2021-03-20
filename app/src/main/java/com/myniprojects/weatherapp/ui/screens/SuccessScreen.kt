@@ -23,11 +23,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myniprojects.weatherapp.R
 import com.myniprojects.weatherapp.model.Main
+import com.myniprojects.weatherapp.model.Sys
 import com.myniprojects.weatherapp.model.Weather
 import com.myniprojects.weatherapp.model.WeatherResponse
+import com.myniprojects.weatherapp.utils.Constants
+import com.myniprojects.weatherapp.utils.getDateTimeFormatFromSec
 import com.myniprojects.weatherapp.utils.getDrawableFromCode
 import com.myniprojects.weatherapp.vm.MainViewModel
 import timber.log.Timber
@@ -61,6 +65,10 @@ fun SuccessScreen(
                 modifier = Modifier
                     .padding(top = dimensionResource(id = R.dimen.medium_margin))
             )
+        }
+
+        item {
+            SunriseSunset(sys = weatherResponse.sys)
         }
     }
 }
@@ -102,7 +110,7 @@ fun CityInput(
 
 @Composable
 fun Time(
-    time: Int,
+    time: Long,
     modifier: Modifier = Modifier
 )
 {
@@ -113,9 +121,9 @@ fun Time(
                 horizontal = dimensionResource(id = R.dimen.medium_margin),
                 vertical = dimensionResource(id = R.dimen.small_margin),
             ),
-        text = time.toString(),
+        text = time.getDateTimeFormatFromSec(),
         textAlign = TextAlign.End,
-        style = MaterialTheme.typography.caption
+        style = MaterialTheme.typography.caption.copy(fontSize = 14.sp)
 
     )
 }
@@ -174,10 +182,10 @@ fun MainInfo(
 @Composable
 fun RowIconText(
     @DrawableRes iconId: Int,
-    @DimenRes iconSizeId: Int,
     text: String,
-    textStyle: TextStyle,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    @DimenRes iconSizeId: Int = R.dimen.base_icon_size,
+    textStyle: TextStyle = MaterialTheme.typography.h6,
 )
 {
     Row(
@@ -233,9 +241,7 @@ fun TemperatureRow(
 
     RowIconText(
         iconId = R.drawable.ic_temperature,
-        iconSizeId = R.dimen.base_icon_size,
         text = temp,
-        textStyle = MaterialTheme.typography.h6
     )
 }
 
@@ -258,9 +264,7 @@ fun PressureRow(
 
     RowIconText(
         iconId = R.drawable.ic_pressure,
-        iconSizeId = R.dimen.base_icon_size,
         text = press,
-        textStyle = MaterialTheme.typography.h6
     )
 }
 
@@ -283,12 +287,32 @@ fun HumidityRow(
 
     RowIconText(
         iconId = R.drawable.ic_drop,
-        iconSizeId = R.dimen.base_icon_size,
         text = hum,
-        textStyle = MaterialTheme.typography.h6
     )
 }
 
+
+@Composable
+fun SunriseSunset(
+    sys: Sys?
+)
+{
+    val sunrise = sys?.sunrise?.getDateTimeFormatFromSec(Constants.TIME_FORMAT)
+    val sunset = sys?.sunset?.getDateTimeFormatFromSec(Constants.TIME_FORMAT)
+
+    val text: String = if (sunrise != null || sunset != null)
+    {
+        val s1 = sunrise ?: stringResource(id = R.string.unknown)
+        val s2 = sunset ?: stringResource(id = R.string.unknown)
+        stringResource(id = R.string.day_routine_format, s1, s2)
+    }
+    else
+    {
+        stringResource(id = R.string.unknown)
+    }
+
+    RowIconText(iconId = R.drawable.ic_day_routine, text = text)
+}
 
 // region previews
 

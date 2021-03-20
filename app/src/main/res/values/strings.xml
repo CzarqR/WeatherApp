@@ -9,4 +9,5 @@
     <string name="temp_format_long">%s°C / %s°C</string>
     <string name="pressure_format">%d hPa</string>
     <string name="humidity_format">%s%%</string>
+    <string name="day_routine_format">%s - %s</string>
 </resources>

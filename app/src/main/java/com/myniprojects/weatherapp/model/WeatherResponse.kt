@@ -9,7 +9,7 @@ data class WeatherResponse(
     val clouds: Clouds? = null,
     val cod: Int? = null,
     val coord: Coord? = null,
-    val dt: Int = 0,
+    val dt: Long = 0,
     val id: Int? = null,
     val main: Main? = null,
     val name: String = "",

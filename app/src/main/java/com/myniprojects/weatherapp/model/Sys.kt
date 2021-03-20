@@ -8,7 +8,7 @@ data class Sys(
     val country: String? = null,
     val id: Int? = null,
     val message: Double? = null,
-    val sunrise: Int? = null,
-    val sunset: Int? = null,
+    val sunrise: Long? = null,
+    val sunset: Long? = null,
     val type: Int? = null
 )
