@@ -1,5 +1,8 @@
 package com.myniprojects.weatherapp.ui.screens
 
+import android.location.Location
+import android.location.Location.FORMAT_MINUTES
+import android.location.LocationManager
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.*
@@ -26,10 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myniprojects.weatherapp.R
-import com.myniprojects.weatherapp.model.Main
-import com.myniprojects.weatherapp.model.Sys
-import com.myniprojects.weatherapp.model.Weather
-import com.myniprojects.weatherapp.model.WeatherResponse
+import com.myniprojects.weatherapp.model.*
+import com.myniprojects.weatherapp.ui.theme.ThemedPreview
 import com.myniprojects.weatherapp.utils.Constants
 import com.myniprojects.weatherapp.utils.getDateTimeFormatFromSec
 import com.myniprojects.weatherapp.utils.getDrawableFromCode
@@ -44,7 +45,10 @@ fun SuccessScreen(
 )
 {
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            bottom = dimensionResource(id = R.dimen.bottom_list_padding)
+        )
     ) {
 
         item {
@@ -68,7 +72,18 @@ fun SuccessScreen(
         }
 
         item {
-            SunriseSunset(sys = weatherResponse.sys)
+            SunriseSunsetRow(
+                sys = weatherResponse.sys,
+                timezone = weatherResponse.timezone
+            )
+        }
+
+        item {
+            WindRow(wind = weatherResponse.wind)
+        }
+
+        item {
+            CloudsRow(clouds = weatherResponse.clouds)
         }
     }
 }
@@ -293,12 +308,17 @@ fun HumidityRow(
 
 
 @Composable
-fun SunriseSunset(
-    sys: Sys?
+fun SunriseSunsetRow(
+    sys: Sys?,
+    timezone: Long? = null
 )
 {
-    val sunrise = sys?.sunrise?.getDateTimeFormatFromSec(Constants.TIME_FORMAT)
-    val sunset = sys?.sunset?.getDateTimeFormatFromSec(Constants.TIME_FORMAT)
+    val sunrise = (sys?.sunrise?.plus(
+        timezone ?: 0
+    ))?.getDateTimeFormatFromSec(Constants.TIME_FORMAT)
+    val sunset = (sys?.sunset?.plus(
+        timezone ?: 0
+    ))?.getDateTimeFormatFromSec(Constants.TIME_FORMAT)
 
     val text: String = if (sunrise != null || sunset != null)
     {
@@ -314,20 +334,59 @@ fun SunriseSunset(
     RowIconText(iconId = R.drawable.ic_day_routine, text = text)
 }
 
+@Composable
+fun WindRow(
+    wind: Wind?
+)
+{
+    val s = wind?.speed
+    if (s != null)
+    {
+        RowIconText(
+            iconId = R.drawable.ic_wind,
+            text = stringResource(id = R.string.wind_format, s),
+        )
+    }
+    else
+    {
+        RowIconText(
+            iconId = R.drawable.ic_wind,
+            text = stringResource(id = R.string.unknown),
+        )
+    }
+}
+
+@Composable
+fun CloudsRow(
+    clouds: Clouds?
+)
+{
+    val c = clouds?.all
+    if (c != null)
+    {
+        RowIconText(
+            iconId = R.drawable.ic_clouds,
+            text = stringResource(id = R.string.clouds_format, c),
+        )
+    }
+    else
+    {
+        RowIconText(
+            iconId = R.drawable.ic_clouds,
+            text = stringResource(id = R.string.unknown),
+        )
+    }
+}
+
 // region previews
 
 @Preview(showBackground = true)
 @Composable
 fun WeatherIconPreview()
 {
-    MaterialTheme {
+    ThemedPreview {
         WeatherIcon(
-            weather = Weather(
-                main = "Clear",
-                description = "clear sky",
-                id = 800,
-                icon = "01d"
-            )
+            weather = WEATHER_RESPONSE_SAMPLE.weather?.get(0)
         )
     }
 }
@@ -336,17 +395,23 @@ fun WeatherIconPreview()
 @Composable
 fun MainInfoPreview()
 {
-    MaterialTheme {
+    ThemedPreview {
         MainInfo(
-            Main(
-                temp = 14.74,
-                feelsLike = 15.62,
-                pressure = 1019,
-                humidity = 94
-            )
+            WEATHER_RESPONSE_SAMPLE.main
         )
     }
 }
 
+
+@Preview(showBackground = true)
+@Composable
+fun SuccessScreenPreview()
+{
+    ThemedPreview {
+        SuccessScreen(
+            weatherResponse = WEATHER_RESPONSE_SAMPLE
+        )
+    }
+}
 
 // endregion

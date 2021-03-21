@@ -4,4 +4,5 @@
     <dimen name="big_margin">16dp</dimen>
     <dimen name="base_icon_size">64dp</dimen>
     <dimen name="small_margin">4dp</dimen>
+    <dimen name="bottom_list_padding">72dp</dimen>
 </resources>

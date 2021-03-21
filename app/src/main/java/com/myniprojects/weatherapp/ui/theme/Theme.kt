@@ -2,6 +2,7 @@ package com.myniprojects.weatherapp.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
@@ -42,4 +43,17 @@ fun WeatherAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compos
         shapes = Shapes,
         content = content
     )
+}
+
+@Composable
+fun ThemedPreview(
+    darkTheme: Boolean = false,
+    children: @Composable () -> Unit
+)
+{
+    WeatherAppTheme(darkTheme = darkTheme) {
+        Surface {
+            children()
+        }
+    }
 }
