@@ -5,7 +5,6 @@ import androidx.compose.ui.graphics.Color
 val DarkSecondary = Color(0xFFE1F5FE)
 val LightSecondary = Color(0xFFB3E5FC)
 
-
 val GradientBottomLight = Color(0xFFfaaca8)
 val GradientTopLight = Color(0xFFddd6f3)
 

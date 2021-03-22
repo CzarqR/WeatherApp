@@ -12,4 +12,5 @@
     <string name="day_routine_format">%s - %s</string>
     <string name="wind_format">%1$.2f m/s</string>
     <string name="clouds_format">%d%%</string>
+    <string name="coord_format">%d°%d\'%s %d°%d\'%s</string>
 </resources>

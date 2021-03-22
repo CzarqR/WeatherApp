@@ -21,6 +21,10 @@ data class WeatherResponse(
 )
 
 val WEATHER_RESPONSE_SAMPLE = WeatherResponse(
+    coord = Coord(
+        lon = -80.6081,
+        lat = 28.0836
+    ),
     clouds = Clouds(
         all = 20
     ),

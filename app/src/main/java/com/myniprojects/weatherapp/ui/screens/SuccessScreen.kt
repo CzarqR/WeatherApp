@@ -1,8 +1,5 @@
 package com.myniprojects.weatherapp.ui.screens
 
-import android.location.Location
-import android.location.Location.FORMAT_MINUTES
-import android.location.LocationManager
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.*
@@ -37,6 +34,9 @@ import com.myniprojects.weatherapp.utils.getDrawableFromCode
 import com.myniprojects.weatherapp.vm.MainViewModel
 import timber.log.Timber
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.round
+import kotlin.math.truncate
 
 
 @Composable
@@ -52,7 +52,11 @@ fun SuccessScreen(
     ) {
 
         item {
-            Time(time = weatherResponse.dt)
+            CordAndTime(
+                coord = weatherResponse.coord,
+                time = weatherResponse.dt,
+                timezone = weatherResponse.timezone
+            )
         }
 
         item {
@@ -90,45 +94,13 @@ fun SuccessScreen(
 
 
 @Composable
-fun CityInput(
-    modifier: Modifier = Modifier,
-    mainViewModel: MainViewModel = viewModel(),
-)
-{
-    val focusManager = LocalFocusManager.current
-
-    OutlinedTextField(
-        modifier = modifier
-            .padding(dimensionResource(id = R.dimen.medium_margin))
-            .fillMaxWidth(),
-        value = mainViewModel.cityName.value,
-        onValueChange = mainViewModel.cityName.component2(),
-        label = { Text(stringResource(id = R.string.city_name)) },
-        trailingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.LocationCity,
-                contentDescription = stringResource(id = R.string.city_icon)
-            )
-        },
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-        singleLine = true,
-        keyboardActions = KeyboardActions(
-
-            onSearch = {
-                Timber.d("Search clicked")
-                focusManager.clearFocus()
-                mainViewModel.getCurrentWeather()
-            }
-        )
-    )
-}
-
-@Composable
 fun Time(
     time: Long,
+    timezone: Long?,
     modifier: Modifier = Modifier
 )
 {
+
     Text(
         modifier = modifier
             .fillMaxWidth()
@@ -136,11 +108,81 @@ fun Time(
                 horizontal = dimensionResource(id = R.dimen.medium_margin),
                 vertical = dimensionResource(id = R.dimen.small_margin),
             ),
-        text = time.getDateTimeFormatFromSec(),
+        text = (time.plus(timezone ?: 0)).getDateTimeFormatFromSec(),
         textAlign = TextAlign.End,
         style = MaterialTheme.typography.caption.copy(fontSize = 14.sp)
 
     )
+}
+
+
+@Composable
+fun LongLat(
+    coord: Coord?,
+    modifier: Modifier = Modifier
+
+)
+{
+    val long = coord?.lon
+    val lat = coord?.lat
+
+    if (long != null && lat != null)
+    {
+        val latD = round(lat).toInt()
+        val latM = round((truncate(abs(lat)) * 60 / 100)).toInt()
+        val latDir: String = if (lat > 0) "N" else if (lat < 0) "S" else ""
+
+        val longD = round(long).toInt()
+        val longM = round((truncate(abs(long)) * 60 / 100)).toInt()
+        val longDir: String = if (long > 0) "E" else if (long < 0) "W" else ""
+
+
+        Text(
+            modifier = modifier
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.medium_margin),
+                    vertical = dimensionResource(id = R.dimen.small_margin),
+                ),
+            text = stringResource(
+                id = R.string.coord_format,
+                latD,
+                latM,
+                latDir,
+                longD,
+                longM,
+                longDir
+            ),
+            textAlign = TextAlign.Start,
+            style = MaterialTheme.typography.caption.copy(fontSize = 14.sp)
+
+        )
+
+    }
+}
+
+@Composable
+fun CordAndTime(
+    coord: Coord?,
+    time: Long,
+    timezone: Long?,
+    modifier: Modifier = Modifier
+)
+{
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        LongLat(
+            coord = coord
+        )
+
+        Time(
+            time = time,
+            timezone = timezone,
+            modifier = modifier.weight(1f),
+        )
+    }
 }
 
 @Composable
@@ -379,6 +421,19 @@ fun CloudsRow(
 }
 
 // region previews
+
+@Preview(showBackground = true)
+@Composable
+fun CordAndTimePreview()
+{
+    ThemedPreview {
+        CordAndTime(
+            coord = WEATHER_RESPONSE_SAMPLE.coord,
+            time = WEATHER_RESPONSE_SAMPLE.dt,
+            timezone = WEATHER_RESPONSE_SAMPLE.timezone
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
