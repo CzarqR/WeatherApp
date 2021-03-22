@@ -1,5 +1,6 @@
 package com.myniprojects.weatherapp.vm
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,6 +8,7 @@ import com.myniprojects.weatherapp.model.WeatherResponse
 import com.myniprojects.weatherapp.network.ResponseState
 import com.myniprojects.weatherapp.repository.MainRepository
 import com.myniprojects.weatherapp.utils.Accessibility
+import com.myniprojects.weatherapp.utils.Constants
 import com.myniprojects.weatherapp.utils.next
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: MainRepository
+    private val repository: MainRepository,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel()
 {
     private val _weatherResponse: MutableStateFlow<ResponseState<WeatherResponse>> = MutableStateFlow(
@@ -33,6 +36,11 @@ class MainViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
+    /**
+     * Load last searched city
+     * If there was saved any city load weather
+     */
+
     fun getCurrentWeather()
     {
         cityName.value = cityName.value.trim()
@@ -45,19 +53,28 @@ class MainViewModel @Inject constructor(
                 if (it is ResponseState.Success)
                 {
                     val c = it.data.sys?.country
-                    if (c != null)
+                    val ct = if (c != null)
                     {
-                        cityName.value = "${it.data.name}, $c"
-                        cityName.value = "${it.data.name}, $c"
+                        "${it.data.name}, $c"
                     }
                     else
                     {
-                        cityName.value = it.data.name
+                        it.data.name
+                    }
+
+                    cityName.value = ct
+
+                    /**
+                     * Search was successful
+                     * Save city name
+                     */
+                    with(sharedPreferences.edit()) {
+                        putString(Constants.SH_LAST_CITY_KEY, ct)
+                        apply()
                     }
                 }
 
                 _weatherResponse.value = it
-
             }
         }
     }
