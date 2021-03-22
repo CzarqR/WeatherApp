@@ -1,4 +1,4 @@
-package com.myniprojects.weatherapp.ui.screens
+package com.myniprojects.weatherapp.ui.screens.success
 
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
@@ -20,17 +20,13 @@ import androidx.compose.ui.unit.sp
 import com.myniprojects.weatherapp.R
 import com.myniprojects.weatherapp.model.*
 import com.myniprojects.weatherapp.ui.theme.ThemedPreview
-import com.myniprojects.weatherapp.utils.Constants
 import com.myniprojects.weatherapp.utils.getDateTimeFormatFromSec
-import com.myniprojects.weatherapp.utils.getDrawableFromCode
-import java.util.*
 import kotlin.math.abs
 import kotlin.math.round
 import kotlin.math.truncate
 
-
 @Composable
-fun SuccessScreen(
+fun SuccessScreenNormal(
     weatherResponse: WeatherResponse
 )
 {
@@ -42,7 +38,7 @@ fun SuccessScreen(
     ) {
 
         item {
-            CordAndTime(
+            CordAndTimeNormal(
                 coord = weatherResponse.coord,
                 time = weatherResponse.dt,
                 timezone = weatherResponse.timezone
@@ -58,30 +54,36 @@ fun SuccessScreen(
         }
 
         item {
-            MainInfo(
-                main = weatherResponse.main,
-                modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.medium_margin))
+            TemperatureRowNormal(
+                temperature = weatherResponse.main?.temp,
+                feelsLike = weatherResponse.main?.feelsLike
             )
         }
 
         item {
-            SunriseSunsetRow(
+            PressureRowNormal(pressure = weatherResponse.main?.pressure)
+        }
+
+        item {
+            HumidityRowNormal(humidity = weatherResponse.main?.humidity)
+        }
+
+        item {
+            SunriseSunsetRowNormal(
                 sys = weatherResponse.sys,
                 timezone = weatherResponse.timezone
             )
         }
 
         item {
-            WindRow(wind = weatherResponse.wind)
+            WindRowNormal(wind = weatherResponse.wind)
         }
 
         item {
-            CloudsRow(clouds = weatherResponse.clouds)
+            CloudsRowNormal(clouds = weatherResponse.clouds)
         }
     }
 }
-
 
 @Composable
 fun Time(
@@ -151,7 +153,7 @@ fun LongLat(
 }
 
 @Composable
-fun CordAndTime(
+fun CordAndTimeNormal(
     coord: Coord?,
     time: Long,
     timezone: Long?,
@@ -175,59 +177,9 @@ fun CordAndTime(
     }
 }
 
-@Composable
-fun WeatherIcon(
-    weather: Weather?,
-    modifier: Modifier = Modifier,
-)
-{
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            painter = painterResource(id = getDrawableFromCode(weather?.icon)),
-            contentDescription = stringResource(id = R.string.weather_icon),
-            modifier = Modifier
-                .fillMaxWidth(0.5f),
-        )
-        weather?.description?.let { desc ->
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = dimensionResource(id = R.dimen.medium_margin)),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h4,
-                text = desc.capitalize(Locale.getDefault())
-            )
-        }
-    }
-}
 
 @Composable
-fun MainInfo(
-    main: Main?,
-    modifier: Modifier = Modifier
-)
-{
-
-    Column(modifier = modifier.fillMaxWidth()) {
-
-        TemperatureRow(
-            temperature = main?.temp,
-            feelsLike = main?.feelsLike
-        )
-
-        PressureRow(pressure = main?.pressure)
-
-        HumidityRow(humidity = main?.humidity)
-    }
-
-}
-
-
-@Composable
-fun RowIconText(
+fun RowIconTextNormal(
     @DrawableRes iconId: Int,
     text: String,
     modifier: Modifier = Modifier,
@@ -261,153 +213,75 @@ fun RowIconText(
 
 
 @Composable
-fun TemperatureRow(
+fun TemperatureRowNormal(
     temperature: Double?,
     feelsLike: Double?,
 )
 {
-    val temp: String = if (temperature == null)
-    {
-        stringResource(id = R.string.unknown)
-    }
-    else
-    {
-        if (feelsLike == null)
-        {
-            stringResource(id = R.string.temp_format, "%.1f".format(temperature))
-        }
-        else
-        {
-            stringResource(
-                id = R.string.temp_format_long,
-                "%.1f".format(temperature),
-                "%.1f".format(feelsLike)
-            )
-        }
-    }
-
-    RowIconText(
+    RowIconTextNormal(
         iconId = R.drawable.ic_temperature,
-        text = temp,
+        text = getTempValue(
+            temperature = temperature,
+            feelsLike = feelsLike
+        ),
     )
 }
 
 @Composable
-fun PressureRow(
+fun PressureRowNormal(
     pressure: Int?
 )
 {
-    val press: String = if (pressure == null)
-    {
-        stringResource(id = R.string.unknown)
-    }
-    else
-    {
-        stringResource(
-            id = R.string.pressure_format,
-            pressure
-        )
-    }
-
-    RowIconText(
+    RowIconTextNormal(
         iconId = R.drawable.ic_pressure,
-        text = press,
+        text = getPressureValue(pressure = pressure),
     )
 }
 
 @Composable
-fun HumidityRow(
+fun HumidityRowNormal(
     humidity: Int?
 )
 {
-    val hum: String = if (humidity == null)
-    {
-        stringResource(id = R.string.unknown)
-    }
-    else
-    {
-        stringResource(
-            id = R.string.humidity_format,
-            humidity
-        )
-    }
-
-    RowIconText(
+    RowIconTextNormal(
         iconId = R.drawable.ic_drop,
-        text = hum,
+        text = getHumidityValue(humidity = humidity),
     )
 }
 
 
 @Composable
-fun SunriseSunsetRow(
+fun SunriseSunsetRowNormal(
     sys: Sys?,
     timezone: Long? = null
 )
 {
-    val sunrise = (sys?.sunrise?.plus(
-        timezone ?: 0
-    ))?.getDateTimeFormatFromSec(Constants.TIME_FORMAT)
-    val sunset = (sys?.sunset?.plus(
-        timezone ?: 0
-    ))?.getDateTimeFormatFromSec(Constants.TIME_FORMAT)
-
-    val text: String = if (sunrise != null || sunset != null)
-    {
-        val s1 = sunrise ?: stringResource(id = R.string.unknown)
-        val s2 = sunset ?: stringResource(id = R.string.unknown)
-        stringResource(id = R.string.day_routine_format, s1, s2)
-    }
-    else
-    {
-        stringResource(id = R.string.unknown)
-    }
-
-    RowIconText(iconId = R.drawable.ic_day_routine, text = text)
+    RowIconTextNormal(
+        iconId = R.drawable.ic_day_routine,
+        text = getSunriseSunsetValue(sys = sys, timezone = timezone)
+    )
 }
 
 @Composable
-fun WindRow(
+fun WindRowNormal(
     wind: Wind?
 )
 {
-    val s = wind?.speed
-    if (s != null)
-    {
-        RowIconText(
-            iconId = R.drawable.ic_wind,
-            text = stringResource(id = R.string.wind_format, s),
-        )
-    }
-    else
-    {
-        RowIconText(
-            iconId = R.drawable.ic_wind,
-            text = stringResource(id = R.string.unknown),
-        )
-    }
+    RowIconTextNormal(
+        iconId = R.drawable.ic_wind,
+        text = getWindValue(wind = wind)
+    )
 }
 
 @Composable
-fun CloudsRow(
+fun CloudsRowNormal(
     clouds: Clouds?
 )
 {
-    val c = clouds?.all
-    if (c != null)
-    {
-        RowIconText(
-            iconId = R.drawable.ic_clouds,
-            text = stringResource(id = R.string.clouds_format, c),
-        )
-    }
-    else
-    {
-        RowIconText(
-            iconId = R.drawable.ic_clouds,
-            text = stringResource(id = R.string.unknown),
-        )
-    }
+    RowIconTextNormal(
+        iconId = R.drawable.ic_clouds,
+        text = getCloudsValue(clouds = clouds),
+    )
 }
 
 // region previews
@@ -417,7 +291,7 @@ fun CloudsRow(
 fun CordAndTimePreview()
 {
     ThemedPreview {
-        CordAndTime(
+        CordAndTimeNormal(
             coord = WEATHER_RESPONSE_SAMPLE.coord,
             time = WEATHER_RESPONSE_SAMPLE.dt,
             timezone = WEATHER_RESPONSE_SAMPLE.timezone
@@ -427,22 +301,33 @@ fun CordAndTimePreview()
 
 @Preview(showBackground = true)
 @Composable
-fun WeatherIconPreview()
+fun RowNormalPreview()
 {
     ThemedPreview {
-        WeatherIcon(
-            weather = WEATHER_RESPONSE_SAMPLE.weather?.get(0)
+        HumidityRowNormal(
+            humidity = WEATHER_RESPONSE_SAMPLE.main?.humidity,
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun MainInfoPreview()
+fun RowNormalNullPreview()
 {
     ThemedPreview {
-        MainInfo(
-            WEATHER_RESPONSE_SAMPLE.main
+        HumidityRowNormal(
+            humidity = null,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SuccessScreenNormalPreview()
+{
+    ThemedPreview {
+        SuccessScreenNormal(
+            weatherResponse = WEATHER_RESPONSE_SAMPLE,
         )
     }
 }
@@ -450,11 +335,11 @@ fun MainInfoPreview()
 
 @Preview(showBackground = true)
 @Composable
-fun SuccessScreenPreview()
+fun SuccessScreenElderlyPreview()
 {
     ThemedPreview {
-        SuccessScreen(
-            weatherResponse = WEATHER_RESPONSE_SAMPLE
+        SuccessScreenElderly(
+            weatherResponse = WEATHER_RESPONSE_SAMPLE,
         )
     }
 }

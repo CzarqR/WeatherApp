@@ -6,4 +6,5 @@
     <dimen name="small_margin">4dp</dimen>
     <dimen name="bottom_list_padding">72dp</dimen>
     <dimen name="sleep_icon_size">100dp</dimen>
+    <dimen name="thick_divider">2dp</dimen>
 </resources>

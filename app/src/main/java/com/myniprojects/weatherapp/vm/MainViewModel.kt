@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,6 +37,17 @@ class MainViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
+    init
+    {
+        sharedPreferences.getInt(Constants.SH_ACCESSIBILITY_KEY, -1).let {
+            Timber.d("Accessibility loaded from SH: $it")
+            if (it >= 0)
+            {
+                accessibility.value = Accessibility.values()[it]
+            }
+        }
+    }
+
     /**
      * Load last searched city
      * If there was saved any city load weather
@@ -47,7 +59,7 @@ class MainViewModel @Inject constructor(
 
         searchJob?.cancel()
 
-        if(cityName.value.isNotBlank())
+        if (cityName.value.isNotBlank())
         {
             searchJob = viewModelScope.launch(Dispatchers.IO) {
                 repository.getCurrentWeather(cityName.value).collectLatest {
@@ -86,6 +98,10 @@ class MainViewModel @Inject constructor(
     fun changeAccessibility()
     {
         accessibility.value = accessibility.value.next
+        with(sharedPreferences.edit()) {
+            putInt(Constants.SH_ACCESSIBILITY_KEY, accessibility.value.ordinal)
+            apply()
+        }
     }
 
 }

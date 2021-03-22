@@ -62,6 +62,7 @@ dependencies {
     implementation "androidx.compose.foundation:foundation:$compose_version"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation "androidx.compose.animation:animation:$compose_version"
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$compose_view_model_version"
 

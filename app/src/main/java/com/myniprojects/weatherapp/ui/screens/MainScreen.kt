@@ -1,15 +1,14 @@
 package com.myniprojects.weatherapp.ui.screens
 
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocationCity
 import androidx.compose.runtime.Composable
@@ -22,10 +21,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myniprojects.weatherapp.R
 import com.myniprojects.weatherapp.model.WeatherResponse
 import com.myniprojects.weatherapp.network.ResponseState
+import com.myniprojects.weatherapp.ui.screens.success.SuccessScreen
 import com.myniprojects.weatherapp.ui.theme.getGradientBottom
 import com.myniprojects.weatherapp.ui.theme.getGradientTop
 import com.myniprojects.weatherapp.utils.Accessibility
@@ -66,7 +67,10 @@ fun MainScreen(
                 .weight(1f),
             contentAlignment = Alignment.BottomEnd
         ) {
-            StateBody(response = networkResponse)
+            StateBody(
+                response = networkResponse,
+                accessibility = mainViewModel.accessibility.value
+            )
 
             AccessibilityButton(
                 accessibility = mainViewModel.accessibility.value,
@@ -87,7 +91,8 @@ fun CityInput(
     OutlinedTextField(
         modifier = modifier
             .padding(dimensionResource(id = R.dimen.medium_margin))
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .animateContentSize(),
         value = mainViewModel.cityName.value,
         onValueChange = mainViewModel.cityName.component2(),
         label = { Text(stringResource(id = R.string.city_name)) },
@@ -109,22 +114,40 @@ fun CityInput(
                     mainViewModel.getCurrentWeather()
                 }
             }
-        )
+        ),
+        textStyle = when (mainViewModel.accessibility.value)
+        {
+            Accessibility.NORMAL ->
+            {
+                MaterialTheme.typography.body1
+            }
+            Accessibility.ELDERLY ->
+            {
+                MaterialTheme.typography.h4.copy(fontSize = 28.sp)
+            }
+        }
     )
 }
 
 @Composable
 fun StateBody(
-    response: ResponseState<WeatherResponse>
+    response: ResponseState<WeatherResponse>,
+    accessibility: Accessibility
 )
 {
-    when (response)
-    {
-        is ResponseState.Success -> SuccessScreen(weatherResponse = response.data)
-        is ResponseState.Error -> ErrorScreen(exception = response.exception)
-        ResponseState.Loading -> LoadingScreen()
-        ResponseState.Sleep -> SleepScreen()
+    Crossfade(targetState = response) {
+        when (it)
+        {
+            is ResponseState.Success -> SuccessScreen(
+                weatherResponse = it.data,
+                accessibility = accessibility
+            )
+            is ResponseState.Error -> ErrorScreen(exception = it.exception)
+            ResponseState.Loading -> LoadingScreen()
+            ResponseState.Sleep -> SleepScreen()
+        }
     }
+
 }
 
 @Composable
