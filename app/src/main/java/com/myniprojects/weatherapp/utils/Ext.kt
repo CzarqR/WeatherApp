@@ -3,6 +3,7 @@ package com.myniprojects.weatherapp.utils
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -14,7 +15,7 @@ fun Long.getDateTimeFormatFromSec(
     return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
     {
         Instant.ofEpochMilli(this * 1000)
-            .atZone(ZoneId.systemDefault())
+            .atZone(ZoneOffset.UTC)
             .toLocalDateTime()
             .format(
                 DateTimeFormatter.ofPattern(

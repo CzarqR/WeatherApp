@@ -103,8 +103,11 @@ fun CityInput(
 
             onSearch = {
                 Timber.d("Search clicked")
-                focusManager.clearFocus()
-                mainViewModel.getCurrentWeather()
+                if (mainViewModel.cityName.value.isNotBlank())
+                {
+                    focusManager.clearFocus()
+                    mainViewModel.getCurrentWeather()
+                }
             }
         )
     )

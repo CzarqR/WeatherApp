@@ -47,34 +47,37 @@ class MainViewModel @Inject constructor(
 
         searchJob?.cancel()
 
-        searchJob = viewModelScope.launch(Dispatchers.IO) {
-            repository.getCurrentWeather(cityName.value).collectLatest {
+        if(cityName.value.isNotBlank())
+        {
+            searchJob = viewModelScope.launch(Dispatchers.IO) {
+                repository.getCurrentWeather(cityName.value).collectLatest {
 
-                if (it is ResponseState.Success)
-                {
-                    val c = it.data.sys?.country
-                    val ct = if (c != null)
+                    if (it is ResponseState.Success)
                     {
-                        "${it.data.name}, $c"
-                    }
-                    else
-                    {
-                        it.data.name
+                        val c = it.data.sys?.country
+                        val ct = if (c != null)
+                        {
+                            "${it.data.name}, $c"
+                        }
+                        else
+                        {
+                            it.data.name
+                        }
+
+                        cityName.value = ct
+
+                        /**
+                         * Search was successful
+                         * Save city name
+                         */
+                        with(sharedPreferences.edit()) {
+                            putString(Constants.SH_LAST_CITY_KEY, ct)
+                            apply()
+                        }
                     }
 
-                    cityName.value = ct
-
-                    /**
-                     * Search was successful
-                     * Save city name
-                     */
-                    with(sharedPreferences.edit()) {
-                        putString(Constants.SH_LAST_CITY_KEY, ct)
-                        apply()
-                    }
+                    _weatherResponse.value = it
                 }
-
-                _weatherResponse.value = it
             }
         }
     }

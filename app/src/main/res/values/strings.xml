@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WeatherApp</string>
+    <string name="app_name">JetWeather</string>
     <string name="city_name">City name</string>
     <string name="city_icon">City icon</string>
     <string name="accessibility_icon">Accessibility icon</string>
